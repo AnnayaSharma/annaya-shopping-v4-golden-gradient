@@ -9,9 +9,7 @@ import { motion } from 'motion/react';
 import { useStore } from '@/store/useStore';
 import { Product } from '@/store/useStore';
 import { cn, formatPrice, getWhatsAppUrl } from '@/lib/utils';
-import type { ShippingAddress } from '@/lib/utils';
 import { ProductCard } from '@/components/ProductCard';
-import { AddressForm } from '@/components/AddressForm';
 
 export default function ProductDetailsPage() {
   const { slug } = useParams<{ slug: string }>();
@@ -25,7 +23,6 @@ export default function ProductDetailsPage() {
   const [selectedSize, setSelectedSize] = useState('');
   const [selectedColor, setSelectedColor] = useState('');
   const [errorInfo, setErrorInfo] = useState<string | null>(null);
-  const [showAddressForm, setShowAddressForm] = useState(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -59,10 +56,9 @@ export default function ProductDetailsPage() {
       .finally(() => setIsLoading(false));
   }, [slug]);
 
-  const handleWhatsAppOrder = (address: ShippingAddress) => {
+  const handleWhatsAppOrder = () => {
     if (!product) return;
-    window.open(getWhatsAppUrl(product.name, selectedSize, selectedColor, product.price, address), '_blank');
-    setShowAddressForm(false);
+    window.open(getWhatsAppUrl(product.name, selectedSize, selectedColor, product.price), '_blank');
   };
 
   if (isLoading) {
@@ -292,7 +288,7 @@ export default function ProductDetailsPage() {
                 <span className="tracking-[0.1em] uppercase text-sm sm:text-base">Add to Bag</span>
               </button>
               <button
-                onClick={() => setShowAddressForm(true)}
+                onClick={handleWhatsAppOrder}
                 className="py-4 sm:py-5 [background:var(--background-whatsapp)] text-ivory font-bold rounded-2xl flex items-center justify-center space-x-3 shadow-[0_0_30px_rgba(37,211,102,0.3)] hover:scale-[1.02] transition-all group"
               >
                 <MessageCircle size={18} className="group-hover:rotate-12 transition-transform" />
@@ -321,12 +317,6 @@ export default function ProductDetailsPage() {
           </div>
         )}
       </div>
-
-      <AddressForm
-        open={showAddressForm}
-        onClose={() => setShowAddressForm(false)}
-        onSubmit={handleWhatsAppOrder}
-      />
     </div>
   );
 }

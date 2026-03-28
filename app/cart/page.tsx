@@ -7,14 +7,11 @@ import { useRouter } from 'next/navigation';
 import { Trash2, Plus, Minus, ShoppingBag, MessageCircle, ArrowLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useStore } from '@/store/useStore';
-import { formatPrice, formatAddress } from '@/lib/utils';
-import type { ShippingAddress } from '@/lib/utils';
-import { AddressForm } from '@/components/AddressForm';
+import { formatPrice } from '@/lib/utils';
 
 export default function CartPage() {
   const { cart, removeFromCart, updateQuantity } = useStore();
   const router = useRouter();
-  const [showAddressForm, setShowAddressForm] = useState(false);
 
   const subtotal = cart.reduce((acc, item) => acc + item.price * item.quantity, 0);
   const totalSavings = cart.reduce(
@@ -22,7 +19,7 @@ export default function CartPage() {
     0
   );
 
-  const handleWhatsAppCheckout = (address: ShippingAddress) => {
+  const handleWhatsAppCheckout = () => {
     if (cart.length === 0) return;
 
     const itemsList = cart
@@ -33,10 +30,8 @@ export default function CartPage() {
       )
       .join('\n');
 
-    const addressBlock = `\n\n📍 *Delivery Address:*\n${formatAddress(address)}`;
-    const message = `Hello Annaya Boutique! 🛍️\nI'd like to place an order for:\n\n${itemsList}\n\n*Total: ${formatPrice(subtotal)}*${addressBlock}\n\nPlease confirm availability!`;
+    const message = `Hello Annaya Boutique! 🛍️\nI'd like to place an order for:\n\n${itemsList}\n\n*Total: ${formatPrice(subtotal)}*\n\nPlease confirm availability!`;
     window.open(`https://wa.me/917494954286?text=${encodeURIComponent(message)}`, '_blank');
-    setShowAddressForm(false);
   };
 
   if (cart.length === 0) {
@@ -191,17 +186,20 @@ export default function CartPage() {
 
           {/* Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white/90 backdrop-blur-xl p-8 sm:p-10 rounded-[2.5rem] border border-gold-amber/20 shadow-[0_20px_50px_rgba(43,22,0,0.05)] sticky top-32">
-              <h3 className="text-2xl font-serif text-espresso mb-8 border-b border-gold-amber/10 pb-4">
+            <div 
+              className="p-8 sm:p-10 rounded-[2.5rem] border border-gold-amber/20 shadow-[0_20px_50px_rgba(0,0,0,0.3)] sticky top-32"
+              style={{ background: 'linear-gradient(135deg, #2B1600 0%, #1A0B00 50%, #0D0700 100%)' }}
+            >
+              <h3 className="text-2xl font-serif text-ivory mb-8 border-b border-gold-amber/20 pb-4">
                 Order Summary
               </h3>
 
               <div className="space-y-5 mb-8 text-sm">
-                <div className="flex justify-between text-espresso/70 font-medium tracking-wide">
+                <div className="flex justify-between text-ivory/70 font-medium tracking-wide">
                   <span>Subtotal</span>
-                  <span className="text-espresso">{formatPrice(subtotal)}</span>
+                  <span className="text-ivory">{formatPrice(subtotal)}</span>
                 </div>
-                <div className="flex justify-between text-espresso/70 font-medium tracking-wide">
+                <div className="flex justify-between text-ivory/70 font-medium tracking-wide">
                   <span>Shipping</span>
                   <span className="text-gold-amber font-bold uppercase tracking-[0.2em] text-[10px] mt-1">Complimentary</span>
                 </div>
@@ -211,7 +209,7 @@ export default function CartPage() {
                     <span>-{formatPrice(totalSavings)}</span>
                   </div>
                 )}
-                <div className="pt-6 border-t border-gold-amber/10 flex justify-between text-espresso text-2xl font-serif mt-2">
+                <div className="pt-6 border-t border-gold-amber/20 flex justify-between text-ivory text-2xl font-serif mt-2">
                   <span>Total</span>
                   <span className="grad-text-gold">{formatPrice(subtotal)}</span>
                 </div>
@@ -219,17 +217,17 @@ export default function CartPage() {
 
               <div className="space-y-5">
                 <button
-                  onClick={() => setShowAddressForm(true)}
-                  className="w-full py-5 [background:var(--background-whatsapp)] text-ivory font-bold rounded-[1.5rem] flex items-center justify-center space-x-3 shadow-[0_10px_30px_rgba(37,211,102,0.25)] hover:shadow-[0_15px_40px_rgba(37,211,102,0.4)] hover:-translate-y-1 transition-all duration-300"
+                  onClick={handleWhatsAppCheckout}
+                  className="w-full py-5 [background:var(--background-whatsapp)] text-white font-bold rounded-[1.5rem] flex items-center justify-center space-x-3 shadow-[0_10px_30px_rgba(37,211,102,0.25)] hover:shadow-[0_15px_40px_rgba(37,211,102,0.4)] hover:-translate-y-1 transition-all duration-300"
                 >
                   <MessageCircle size={22} />
-                  <span className="tracking-[0.15em] uppercase text-sm">Secure via WhatsApp</span>
+                  <span className="tracking-[0.15em] uppercase text-sm text-white">Secure via WhatsApp</span>
                 </button>
                 <div className="text-center space-y-2">
-                  <p className="text-[10px] text-espresso/50 uppercase tracking-[0.2em] leading-relaxed">
+                  <p className="text-[10px] text-ivory/50 uppercase tracking-[0.2em] leading-relaxed">
                     End-to-End Encrypted Checkout
                   </p>
-                  <p className="text-[10px] text-espresso/40 uppercase tracking-[0.1em] leading-relaxed">
+                  <p className="text-[10px] text-ivory/40 uppercase tracking-[0.1em] leading-relaxed">
                     We personally confirm availability <br /> and guarantee your details.
                   </p>
                 </div>
@@ -238,12 +236,6 @@ export default function CartPage() {
           </div>
         </div>
       </div>
-
-      <AddressForm
-        open={showAddressForm}
-        onClose={() => setShowAddressForm(false)}
-        onSubmit={handleWhatsAppCheckout}
-      />
     </div>
   );
 }
