@@ -8,7 +8,7 @@ export async function GET(
   try {
     const { slug } = await params;
     const client = await clientPromise;
-    const db = client.db('ananyanewshop');
+    const db = client.db();
     const productsCollection = db.collection('products');
 
     const product = await productsCollection.findOne({
